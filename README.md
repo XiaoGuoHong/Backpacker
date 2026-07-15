@@ -1,11 +1,11 @@
-# Backpacker / SmartVoyage 智能旅行行程规划器
+# Backpacker 智能旅行行程规划器
 
 > 一个基于 FastAPI + Vue 3 + 多 Agent（A2A/MCP）协作的智能旅行行程规划器。
 > 输入目的地、日期、预算与偏好，系统自动生成含景点、酒店、天气与预算的多日行程。
 
 ## 项目状态
 
-当前处于 **MVP 阶段**，正从旧的「天气 / 火车 / 飞机 / 演唱会」查询助手重构为 **智能旅行行程规划器**。
+当前处于 **MVP 阶段**，前身为 SmartVoyage，正从「天气 / 火车 / 飞机 / 演唱会」查询助手重构为 **智能旅行行程规划器**。
 
 - 设计文档：`docs/superpowers/specs/2026-07-15-itinerary-planner-redesign-design.md`
 - 需求文档：`docs/requirements.md`
