@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SmartVoyage 智慧旅行助手</title>
+<style>
+  :root { --bg:#0f172a; --panel:#1e293b; --bubble:#334155; --user:#2563eb; --text:#e2e8f0; --muted:#94a3b8; --ok:#22c55e; --warn:#f59e0b; --demo:#a855f7; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; }
+  header { padding:12px 16px; background:var(--panel); display:flex; align-items:center; gap:12px; border-bottom:1px solid #0b1220; }
+  header h1 { font-size:16px; margin:0; flex:1; }
+  .pill { font-size:12px; padding:3px 10px; border-radius:999px; background:#0b1220; color:var(--muted); }
+  .pill.ok { color:var(--ok); }
+  .pill.warn { color:var(--warn); }
+  #log { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .msg { max-width:80%; padding:10px 14px; border-radius:12px; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
+  .msg.user { align-self:flex-end; background:var(--user); }
+  .msg.bot { align-self:flex-start; background:var(--bubble); }
+  .msg.error { align-self:flex-start; background:#7f1d1d; }
+  .msg .meta { font-size:11px; color:var(--muted); margin-top:6px; }
+  .badge { display:inline-block; font-size:11px; padding:1px 8px; border-radius:999px; background:var(--demo); color:#fff; margin-left:6px; }
+  .results { margin-top:8px; border-top:1px solid #475569; padding-top:8px; }
+  .results table { border-collapse:collapse; font-size:13px; width:100%; }
+  .results td { padding:3px 8px; vertical-align:top; border-bottom:1px solid #334155; }
+  .results td.k { color:var(--muted); white-space:nowrap; }
+  .results .sub { margin:6px 0; }
+  .hint { margin-top:8px; font-size:13px; color:var(--warn); }
+  footer { display:flex; gap:8px; padding:12px 16px; background:var(--panel); border-top:1px solid #0b1220; }
+  textarea { flex:1; resize:none; height:44px; padding:10px 12px; border-radius:10px; border:1px solid #334155; background:#0b1220; color:var(--text); font-size:14px; }
+  button { padding:0 18px; border:none; border-radius:10px; background:var(--user); color:#fff; font-size:14px; cursor:pointer; }
+  button.ghost { background:#334155; }
+  button:disabled { opacity:.5; cursor:default; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SmartVoyage 智慧旅行助手</h1>
+  <span id="health" class="pill">健康检测中…</span>
+  <span id="metrics" class="pill">指标加载中…</span>
+</header>
+
+<div id="log"></div>
+
+<footer>
+  <textarea id="input" placeholder="例如：北京 2025-08-11 天气怎么样（回车发送）"></textarea>
+  <button id="send">发送</button>
+  <button id="reset" class="ghost">新对话</button>
+</footer>
+
+<script>
+function el(tag, props, children) {
+  const n = document.createElement(tag);
+  if (props) for (const k in props) {
+    if (k === "class") n.className = props[k];
+    else if (k === "text") n.textContent = props[k];
+    else n.setAttribute(k, props[k]);
+  }
+  (children || []).forEach(c => n.appendChild(typeof c === "string" ? document.createTextNode(c) : c));
+  return n;
+}
+
+function renderValue(value) {
+  if (value === null || value === undefined) return el("span", { text: "—" });
+  if (typeof value === "object") {
+    if (Array.isArray(value)) {
+      if (value.length === 0) return el("span", { text: "（空）" });
+      const wrap = el("div", { class: "sub" });
+      value.forEach(item => wrap.appendChild(renderValue(item)));
+      return wrap;
+    }
+    const t = el("table");
+    for (const k in value) {
+      t.appendChild(el("tr", null, [
+        el("td", { class: "k", text: k }),
+        el("td", null, [renderValue(value[k])]),
+      ]));
+    }
+    return t;
+  }
+  return el("span", { text: String(value) });
+}
+
+function renderResult(item) {
+  const content = item.content || {};
+  const isDemo = content.is_demo === true;
+  const card = el("div", { class: "results" });
+  const title = el("div", null, [el("strong", { text: item.type || "结果" })]);
+  if (isDemo) title.appendChild(el("span", { class: "badge", text: "演示数据" }));
+  card.appendChild(title);
+  const tbl = el("table");
+  for (const k in content) {
+    if (k === "is_demo") continue;
+    tbl.appendChild(el("tr", null, [
+      el("td", { class: "k", text: k }),
+      el("td", null, [renderValue(content[k])]),
+    ]));
+  }
+  card.appendChild(tbl);
+  return card;
+}
+
+function addBubble(role, build, meta) {
+  const m = el("div", { class: "msg " + role });
+  build(m);
+  if (meta) m.appendChild(el("div", { class: "meta", text: meta }));
+  document.getElementById("log").appendChild(m);
+  document.getElementById("log").scrollTop = document.getElementById("log").scrollHeight;
+}
+
+function sessionId() {
+  let s = localStorage.getItem("sv_session");
+  if (!s) { s = "web-" + Math.random().toString(36).slice(2, 10); localStorage.setItem("sv_session", s); }
+  return s;
+}
+
+async function send() {
+  const ta = document.getElementById("input");
+  const text = ta.value.trim();
+  if (!text) return;
+  ta.value = "";
+  addBubble("user", m => m.appendChild(document.createTextNode(text)), "会话 " + sessionId());
+  const btn = document.getElementById("send");
+  btn.disabled = true;
+  try {
+    const resp = await fetch("/api/v1/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId(), raw_input: text }),
+    });
+    const data = await resp.json();
+    if (data.error) {
+      addBubble("error", m => m.appendChild(document.createTextNode(data.error.message)), "request " + (data.request_id || ""));
+      return;
+    }
+    addBubble("bot", m => {
+      if (data.answer) m.appendChild(document.createTextNode(data.answer));
+      else if (data.condition_summary) m.appendChild(document.createTextNode(data.condition_summary));
+      (data.results || []).forEach(it => m.appendChild(renderResult(it)));
+      if (data.hints) m.appendChild(el("div", { class: "hint", text: "提示：" + data.hints }));
+      const foot = [];
+      if (data.source) foot.push("来源：" + data.source);
+      if (data.query_time) foot.push("查询时间：" + data.query_time);
+      if (foot.length) m.appendChild(el("div", { class: "meta", text: foot.join("　") + "　request " + data.request_id }));
+    });
+  } catch (e) {
+    addBubble("error", m => m.appendChild(document.createTextNode("请求失败：" + e.message)));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function refreshStatus() {
+  try {
+    const h = await (await fetch("/health")).json();
+    const pill = document.getElementById("health");
+    const ok = h.status === "ok";
+    pill.textContent = ok ? "服务可用" : "服务降级";
+    pill.className = "pill " + (ok ? "ok" : "warn");
+    const m = await (await fetch("/metrics")).json();
+    const total = m.total || 0;
+    const okCount = Object.values(m.by_type || {}).reduce((a, b) => a + (b.success || 0), 0);
+    document.getElementById("metrics").textContent = "查询 " + total + " 次 / 成功 " + okCount;
+  } catch (e) {
+    document.getElementById("health").textContent = "无法连接";
+    document.getElementById("health").className = "pill warn";
+  }
+}
+
+document.getElementById("send").addEventListener("click", send);
+document.getElementById("input").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
+document.getElementById("reset").addEventListener("click", () => { localStorage.removeItem("sv_session"); document.getElementById("log").innerHTML = ""; });
+refreshStatus();
+setInterval(refreshStatus, 30000);
+</script>
+</body>
+</html>
