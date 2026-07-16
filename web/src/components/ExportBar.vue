@@ -10,7 +10,11 @@ async function getCanvas(): Promise<HTMLCanvasElement> {
   const html2canvas = (mod as any).default ?? (mod as any).html2canvas
   const el = document.getElementById(props.targetId)
   if (!el) throw new Error('找不到可导出的内容区域')
-  return await html2canvas(el, { backgroundColor: '#0f172a', useCORS: true })
+  return await html2canvas(el, {
+    backgroundColor: '#1c1c1e',
+    useCORS: true,
+    scale: window.devicePixelRatio > 1 ? 2 : 1.5,
+  })
 }
 
 async function exportImage() {
@@ -54,21 +58,43 @@ async function exportPdf() {
 
 <template>
   <section class="export-bar">
-    <button class="ghost" :disabled="busy !== ''" @click="exportImage">
-      {{ busy === 'image' ? '导出中…' : '导出图片' }}
+    <button class="export" :disabled="busy !== ''" @click="exportImage">
+      <span class="ico">🖼</span>
+      <span>{{ busy === 'image' ? '导出中…' : '导出图片' }}</span>
     </button>
-    <button class="ghost" :disabled="busy !== ''" @click="exportPdf">
-      {{ busy === 'pdf' ? '导出中…' : '导出 PDF' }}
+    <button class="export" :disabled="busy !== ''" @click="exportPdf">
+      <span class="ico">📄</span>
+      <span>{{ busy === 'pdf' ? '导出中…' : '导出 PDF' }}</span>
     </button>
   </section>
 </template>
 
 <style scoped>
 .export-bar { display: flex; gap: 8px; }
-.ghost {
-  padding: 8px 14px; border: 1px solid var(--bubble); border-radius: 8px;
-  background: var(--bg); color: var(--text); font-size: 13px; cursor: pointer;
+.export {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
 }
-.ghost:hover { border-color: var(--user); }
-.ghost:disabled { opacity: 0.5; cursor: default; }
+.export:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: var(--text);
+}
+.export:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ico { font-size: 15px; }
 </style>

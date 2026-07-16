@@ -74,7 +74,7 @@ class OrchestratorService:
 
             items: list[tuple[str, dict]] = [
                 ("attraction", {"keywords": "景点", "city": request.destination}),
-                ("weather", {"city": request.destination, "start_date": request.start_date.isoformat(), "days": request.computed_days}),
+                ("weather", {"city": request.destination, "start_date": request.start_date.isoformat(), "days": request.computed_days, "weather_source": self.settings.weather_source}),
                 ("hotel", {"keywords": "酒店", "city": request.destination, "type": "100000"}),
             ]
 

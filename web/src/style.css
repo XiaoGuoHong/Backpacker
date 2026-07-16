@@ -1,14 +1,50 @@
 :root {
-  --bg: #0f172a;
-  --panel: #1e293b;
-  --bubble: #334155;
-  --user: #2563eb;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-  --ok: #22c55e;
-  --warn: #f59e0b;
-  --demo: #a855f7;
-  --error: #7f1d1d;
+  /* Sonoma 调色板 —— 深色玻璃质感 */
+  --bg-grad-1: #1c1c1e;
+  --bg-grad-2: #2c2c2e;
+  --bg-grad-3: #0a0a0c;
+  --glass: rgba(48, 48, 52, 0.55);
+  --glass-strong: rgba(64, 64, 68, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-hover: rgba(72, 72, 78, 0.65);
+
+  /* Sonoma 系统色（饱和、明亮） */
+  --accent: #0a84ff;       /* 蓝 */
+  --accent-2: #bf5af2;     /* 紫 */
+  --accent-3: #30d158;     /* 绿 */
+  --accent-4: #ff9f0a;     /* 橙 */
+  --accent-5: #ff375f;     /* 粉红 */
+
+  /* 文本 */
+  --text: #f5f5f7;
+  --text-2: #d1d1d6;
+  --muted: #8e8e93;
+  --muted-2: #636366;
+
+  /* 语义 */
+  --ok: #30d158;
+  --warn: #ffd60a;
+  --error: #ff453a;
+  --demo: #bf5af2;
+
+  /* 圆角 —— Sonoma 偏大圆角 */
+  --radius: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* 阴影 —— 柔和 */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.30), 0 6px 16px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0 8px 28px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 12px 36px rgba(0, 0, 0, 0.40);
+
+  /* 间距 */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
 }
 
 * {
@@ -21,16 +57,43 @@ body {
   height: 100%;
 }
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+    'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at top left, #3a2a4a 0%, transparent 45%),
+    radial-gradient(ellipse at top right, #143a52 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, #2a1a1a 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg-grad-1), var(--bg-grad-3));
+  background-attachment: fixed;
+  letter-spacing: -0.01em;
+}
+
 #app {
   height: 100vh;
 }
 
-body {
-  font-family: system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-
 button {
   font-family: inherit;
+  letter-spacing: inherit;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.20); background-clip: padding-box; }
+
+input,
+select,
+button {
+  -webkit-appearance: none;
+  appearance: none;
 }

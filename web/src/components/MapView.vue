@@ -8,6 +8,7 @@ const props = defineProps<{ days: ItineraryDay[]; amapJsKey: string | null }>()
 const container = ref<HTMLDivElement | null>(null)
 const error = ref('')
 const disabled = ref(false)
+const loading = ref(true)
 let map: any = null
 let markers: any[] = []
 let polylines: any[] = []
@@ -49,19 +50,26 @@ async function render() {
   }
   error.value = ''
   const AMap = (window as any).AMap
+  const colors = ['#0a84ff', '#bf5af2', '#30d158', '#ff9f0a', '#ff375f']
   points.forEach((p) => {
+    const color = colors[(p.day - 1) % colors.length]
     const marker = new AMap.Marker({
       position: [p.lng, p.lat],
       title: p.name,
-      label: { content: `Day${p.day} ${p.name}`, direction: 'top' },
+      label: { content: `<div style="background:${color};color:#fff;padding:2px 6px;border-radius:6px;font-size:11px;">Day${p.day} ${p.name}</div>`, direction: 'top' },
     })
     map.add(marker)
     markers.push(marker)
   })
-  byDay.forEach((dayPts) => {
+  byDay.forEach((dayPts, idx) => {
     if (dayPts.length >= 2) {
       const path = dayPts.map((p) => [p.lng, p.lat])
-      const polyline = new AMap.Polyline({ path, strokeColor: '#2563eb', strokeWeight: 3, strokeOpacity: 0.8 })
+      const polyline = new AMap.Polyline({
+        path,
+        strokeColor: colors[idx % colors.length],
+        strokeWeight: 3,
+        strokeOpacity: 0.85,
+      })
       map.add(polyline)
       polylines.push(polyline)
     }
@@ -72,14 +80,17 @@ async function render() {
 async function init() {
   if (!props.amapJsKey) {
     disabled.value = true
+    loading.value = false
     return
   }
   try {
     const AMap = await AMapLoader.load({ key: props.amapJsKey, version: '2.0', plugins: [] })
     map = new AMap.Map(container.value, { zoom: 11, viewMode: '2D' })
     await render()
+    loading.value = false
   } catch (e) {
     disabled.value = true
+    loading.value = false
     error.value = e instanceof Error ? e.message : '地图加载失败'
   }
 }
@@ -103,10 +114,13 @@ init()
 </script>
 
 <template>
-  <section class="map-view">
-    <h3>地图</h3>
+  <section class="map glass">
+    <div class="head">
+      <span class="dot" />
+      <h3>地图</h3>
+    </div>
     <div v-if="disabled" class="fallback">
-      <p class="muted">未配置高德 JS Key，地图已降级。景点坐标列表：</p>
+      <p class="muted">未配置高德 JS Key，已降级为坐标列表。</p>
       <ul>
         <li v-for="d in days" :key="d.index">
           <span class="day-label">Day {{ d.index }}</span>
@@ -118,23 +132,67 @@ init()
           </span>
           <span v-if="d.hotel?.location?.lng != null" class="item">
             酒店：{{ d.hotel.name }}
-            ({{ d.hotel.location.lng?.toFixed(4) }}, {{ d.hotel.location.lat?.toFixed(4) }})
           </span>
         </li>
       </ul>
     </div>
-    <div v-else ref="container" class="map-canvas" />
-    <p v-if="!disabled && error" class="muted">{{ error }}</p>
+    <div v-else class="map-canvas-wrap">
+      <div v-if="loading" class="loading">加载地图中…</div>
+      <div ref="container" class="map-canvas" />
+      <p v-if="error" class="muted">{{ error }}</p>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.map-view { background: var(--panel); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-h3 { margin: 0; }
-.map-canvas { width: 100%; height: 360px; border-radius: 8px; overflow: hidden; }
-.fallback ul { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
-.day-label { color: var(--user); font-weight: 600; margin-right: 6px; }
-.item { font-size: 13px; margin-right: 8px; }
+.map {
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-1);
+  min-height: 280px;
+}
+.head { display: flex; align-items: center; gap: 8px; }
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.map-canvas-wrap { position: relative; }
+.map-canvas {
+  width: 100%;
+  height: 320px;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 13px;
+  z-index: 2;
+}
+.fallback ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.day-label { color: var(--accent); font-weight: 600; margin-right: 6px; }
+.item { font-size: 13px; margin-right: 10px; }
 .coord { color: var(--muted); font-size: 12px; }
-.muted { color: var(--muted); font-size: 13px; margin: 0; }
+.muted { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 </style>

@@ -110,8 +110,14 @@ async def make_weather_handler(params: dict[str, Any]) -> dict[str, Any]:
         }
 
     mode = params.get("weather_source", "open-meteo")
+    if mode == "demo":
+        return weather_demo_for_days({"city": city, "start_date": start, "days": days})
     if mode == "qweather":
         forecasts = await _qweather_forecasts(city, start, days)
+    elif mode == "amap":
+        amap_demo = await amap_weather({"city": city})
+        forecasts = (amap_demo.get("forecasts") or [])
+        forecasts = [f for f in forecasts if f.get("date", "") >= start][:days]
     else:
         forecasts = await _open_meteo_forecasts(city, start, days)
 
