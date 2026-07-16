@@ -7,6 +7,7 @@ import MapView from './components/MapView.vue'
 import BudgetPanel from './components/BudgetPanel.vue'
 import SidebarNav from './components/SidebarNav.vue'
 import ExportBar from './components/ExportBar.vue'
+import ThemeToggle from './components/ThemeToggle.vue'
 import {
   fetchConfig,
   fetchHealth,
@@ -171,6 +172,7 @@ onBeforeUnmount(() => {
       <div class="status">
         <span class="pill" :class="health.status">{{ health.text }}</span>
         <span v-if="metricsText" class="pill muted">{{ metricsText }}</span>
+        <ThemeToggle />
       </div>
     </header>
 
@@ -348,10 +350,7 @@ onBeforeUnmount(() => {
 }
 .hero-head h2 em {
   font-style: italic;
-  background: linear-gradient(120deg, var(--accent), var(--accent-2) 70%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
 }
 .lede {
   max-width: 540px;
@@ -416,12 +415,13 @@ onBeforeUnmount(() => {
   flex: 1;
 }
 .badge {
-  background: linear-gradient(135deg, var(--accent-2), var(--accent));
-  color: #fff;
+  background: var(--accent-soft);
+  color: var(--accent);
   font-size: 11px;
   padding: 3px 10px;
   border-radius: var(--radius-pill);
   white-space: nowrap;
+  border: 1px solid var(--accent-border);
 }
 
 .body { display: flex; flex-direction: column; gap: 20px; }

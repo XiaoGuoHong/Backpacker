@@ -105,14 +105,14 @@ const themeTag = computed(() => {
   height: 44px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  background: var(--accent);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.35);
+  box-shadow: var(--accent-shadow);
 }
 .head-text { flex: 1; }
 .date { margin: 0; font-size: 14px; font-weight: 600; color: var(--text); }
@@ -124,7 +124,7 @@ const themeTag = computed(() => {
   gap: 2px;
 }
 .w-main { font-size: 13px; color: var(--text-2); }
-.w-temp { font-size: 13px; color: var(--accent-4); font-weight: 600; }
+.w-temp { font-size: 13px; color: var(--accent); font-weight: 600; }
 
 .attractions { display: flex; flex-direction: column; gap: 10px; }
 .attr-row {
@@ -168,8 +168,8 @@ const themeTag = computed(() => {
   gap: 10px;
   padding: 14px 16px;
   border-radius: var(--radius);
-  background: linear-gradient(135deg, rgba(191, 90, 242, 0.10), rgba(10, 132, 255, 0.08));
-  border: 1px solid rgba(191, 90, 242, 0.18);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
   font-size: 13.5px;
 }
 .h-label { color: var(--muted); font-size: 12px; }
@@ -177,7 +177,7 @@ const themeTag = computed(() => {
 .h-price {
   font-size: 13px;
   font-weight: 600;
-  color: var(--accent-3);
+  color: var(--accent);
 }
 .h-star { color: var(--warn); font-size: 12px; letter-spacing: 1px; }
 </style>

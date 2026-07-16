@@ -113,4 +113,5 @@ def test_unsplash_client_no_key_returns_placeholder():
     assert not client.available
     out = asyncio.run(client.search("故宫"))
     assert out["is_demo"] is True
-    assert len(out["images"]) == 1
+    # 无 Key 时不返回外部占位图，交由前端首字符占位渲染（避免不可达死链）
+    assert len(out["images"]) == 0

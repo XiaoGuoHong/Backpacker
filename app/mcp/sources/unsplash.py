@@ -22,7 +22,7 @@ class UnsplashClient:
 
     async def search(self, query: str, per_page: int = 5) -> dict[str, Any]:
         if not self.available:
-            return {"images": _placeholder_images(query), "is_demo": True, "source": "演示数据"}
+            return {"images": [], "is_demo": True, "source": "演示数据"}
 
         params = {"query": query, "per_page": per_page, "orientation": "landscape"}
         headers = {"Authorization": f"Client-ID {self.access_key}"}
@@ -43,8 +43,9 @@ class UnsplashClient:
                     "author": (result.get("user") or {}).get("name", ""),
                 })
 
+        # 搜不到真实图：返回空列表，让前端用首字符占位（比外部占位图更可靠）
         if not images:
-            return {"images": _placeholder_images(query), "is_demo": True, "source": "演示数据"}
+            return {"images": [], "is_demo": True, "source": "演示数据"}
 
         return {"images": images, "is_demo": False, "source": "Unsplash"}
 

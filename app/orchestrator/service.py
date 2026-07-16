@@ -85,11 +85,12 @@ class OrchestratorService:
             hotels = self._parse_hotels(dispatch_results)
             weathers = self._parse_weather(dispatch_results)
 
-            # 为每个景点补图
-            for attraction in attractions:
-                image_url = await self._fetch_image(attraction.name)
-                if image_url:
-                    attraction.image_url = image_url
+            # 为每个景点并行补图（避免串行网络往返累加）
+            image_tasks = [self._fetch_image(a.name) for a in attractions]
+            image_results = await asyncio.gather(*image_tasks, return_exceptions=True)
+            for attraction, url in zip(attractions, image_results):
+                if isinstance(url, str) and url:
+                    attraction.image_url = url
 
             self._emit(task_id, "planning", "正在规划行程…")
             itinerary = await self.planner.integrate(attractions, hotels, weathers, request)

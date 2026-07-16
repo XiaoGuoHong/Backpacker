@@ -46,7 +46,7 @@ const emit = defineEmits<{ (e: 'select', index: number): void }>()
 .dot {
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-4), var(--accent-2));
+  background: var(--accent);
 }
 h3 { margin: 0; font-size: 15px; font-weight: 600; }
 ol {
@@ -70,9 +70,8 @@ li {
 }
 li:hover { background: rgba(255, 255, 255, 0.06); }
 li.active {
-  background: linear-gradient(135deg, rgba(10, 132, 255, 0.20), rgba(191, 90, 242, 0.16));
-  border-color: rgba(10, 132, 255, 0.32);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
 }
 .idx {
   font-size: 11px;
@@ -87,7 +86,7 @@ li.active .idx { color: var(--text); }
 .count { font-size: 11px; color: var(--muted); }
 .w-mini {
   font-size: 11px;
-  color: var(--accent-4);
+  color: var(--muted);
   white-space: nowrap;
 }
 </style>

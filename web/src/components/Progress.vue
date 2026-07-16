@@ -43,7 +43,7 @@ const STAGES: Record<string, string> = {
 .orb {
   width: 56px; height: 56px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent-4), var(--accent));
+  background: conic-gradient(from 0deg, var(--accent), rgba(10, 132, 255, 0.15), var(--accent));
   -webkit-mask: radial-gradient(circle at 50% 50%, transparent 60%, #000 62%);
   mask: radial-gradient(circle at 50% 50%, transparent 60%, #000 62%);
   animation: spin 1.2s linear infinite;
@@ -80,10 +80,10 @@ const STAGES: Record<string, string> = {
   transition: all 0.18s ease;
 }
 .stage-pill.active {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--accent);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 4px 14px rgba(10, 132, 255, 0.35);
+  box-shadow: var(--accent-shadow);
 }
 .stage-pill.done {
   background: rgba(48, 209, 88, 0.14);

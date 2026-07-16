@@ -66,8 +66,8 @@ defineProps<{ attraction: Attraction }>()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-  color: #fff;
+  background: var(--accent-soft);
+  color: var(--accent);
   font-size: 32px;
   font-weight: 700;
 }

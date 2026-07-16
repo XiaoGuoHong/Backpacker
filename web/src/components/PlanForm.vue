@@ -243,10 +243,9 @@ input::-webkit-calendar-picker-indicator { filter: invert(0.9); cursor: pointer;
 }
 .chip:hover { background: rgba(255, 255, 255, 0.10); }
 .chip.active {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(10, 132, 255, 0.35);
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--accent);
 }
 .chip-icon { font-size: 16px; }
 
@@ -272,9 +271,9 @@ input::-webkit-calendar-picker-indicator { filter: invert(0.9); cursor: pointer;
 }
 .seg:hover { color: var(--text-2); }
 .seg.active {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+  background: var(--glass-hover);
   color: var(--text);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 0 0 1px var(--glass-border);
 }
 .seg-title { font-size: 14px; font-weight: 600; }
 .seg-sub { font-size: 11px; color: var(--muted-2); }
@@ -295,7 +294,7 @@ input::-webkit-calendar-picker-indicator { filter: invert(0.9); cursor: pointer;
   padding: 14px 22px;
   border: none;
   border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  background: var(--accent);
   color: #fff;
   font-size: 15px;
   font-weight: 600;
@@ -305,12 +304,12 @@ input::-webkit-calendar-picker-indicator { filter: invert(0.9); cursor: pointer;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 6px 18px rgba(10, 132, 255, 0.35);
+  box-shadow: var(--accent-shadow);
   transition: all 0.18s ease;
 }
 .primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 28px rgba(10, 132, 255, 0.45);
+  box-shadow: 0 10px 28px rgba(10, 132, 255, 0.40);
 }
 .primary:active { transform: translateY(0); }
 .primary-arrow { transition: transform 0.18s ease; }

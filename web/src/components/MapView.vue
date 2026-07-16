@@ -162,7 +162,7 @@ init()
 .dot {
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--accent);
 }
 h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .map-canvas-wrap { position: relative; }
