@@ -5,7 +5,7 @@
 
 ## 项目状态
 
-当前处于 **MVP 阶段**，前身为 SmartVoyage，正从「天气 / 火车 / 飞机 / 演唱会」查询助手重构为 **智能旅行行程规划器**。
+当前处于 **MVP 阶段**，目标是 **智能旅行行程规划器**。
 
 - 设计文档：`docs/superpowers/specs/2026-07-15-itinerary-planner-redesign-design.md`
 - 需求文档：`docs/requirements.md`
